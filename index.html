@@ -1,0 +1,50 @@
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Python - Pyscript</title>
+        <script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
+    </head>
+    <body>
+        <h1>Poly Translator</h1>
+        <p>Upload Video for Processing</p>
+
+        <!-- Input for video file -->
+        <input type="file" id="videoFile" accept="video/*" />
+
+        <!-- Button to trigger video processing -->
+        <button py-click="upload_video">Process Video</button>
+
+        <!-- Output area for results -->
+        <div id="output"></div>
+
+        <!-- Load Python Script -->
+        <script type="py" src="./main.py" config="./pyscript.json"></script>
+
+        <script>
+            async function upload_video() {
+                const fileInput = document.getElementById("videoFile");
+                const videoFile = fileInput.files[0];
+
+                if (videoFile) {
+                    // Create FormData to send video to server
+                    const formData = new FormData();
+                    formData.append("video", videoFile);
+
+                    // Send video to server using fetch
+                    const response = await fetch("/process_video", {
+                        method: "POST",
+                        body: formData,
+                    });
+
+                    if (response.ok) {
+                        // Handle the server response
+                        const data = await response.json();
+                        document.getElementById("output").innerText = data.message;
+                    } else {
+                        document.getElementById("output").innerText = "Error processing video";
+                    }
+                }
+            }
+        </script>
+    </body>
+</html>
